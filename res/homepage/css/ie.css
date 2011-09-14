@@ -1,0 +1,30 @@
+body, form {
+	margin: 0;
+	padding: 0;
+}
+
+#all {
+	width: 893px;
+	height: 660px;
+	position: absolute;
+	top: 45px;
+	left: 50%;
+	margin-left: -446px;
+}
+
+#shadow_top {
+	width: 893px;
+	height: 26px;
+	position: absolute; 
+	top: 0;
+	left: 50%;
+	margin-left: -446px;
+	background-image: url('res/shadow_top.png');
+}
+
+#navi_top, #navi_bottom {
+	font-size: 1px;
+}
+#nab_corner {
+	position: absolute;
+}

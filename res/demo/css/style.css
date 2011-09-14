@@ -1,0 +1,63 @@
+body {
+	font-family: Verdana;
+	background-color: #EFEFEF;
+}
+#navbar {
+	margin-top: 20px;
+}
+#navbar ul li {
+	display: inline; /* Fix IE Step Down */
+}
+
+	#navbar ul li a:link, #navbar ul li a:visited {
+		display: block;
+		height: 37px;
+		float: left;
+		background: url(/res/demo/navtab-right.png) top right no-repeat; 
+		margin: 0 1px 0 1px;
+			
+			font-family: "verdana", sans-serif;
+			font-size: 14px;
+			font-weight: bold;
+			text-decoration: none;
+			color: #fff;
+	}
+
+		#navbar ul li a span {
+			display: block;
+			height: 28px;
+			float: left; /* IE 6 Fix */
+			padding: 8px 10px 0px 10px;
+			background: url(/res/demo/navtab-left.png) top left no-repeat;
+		}
+		
+		#navbar ul li a:hover, #navbar ul li a.active {
+			background-position: bottom right;
+		}
+		
+		#navbar ul li a:hover span, #navbar ul li a.active span {
+			background-position: bottom left;
+			color: #dae1ea;
+			cursor: pointer; /* Remind IE which cursor to use! */
+		}
+
+#content {
+	clear: both;
+	border: 1px solid #666;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 4px 4px 10px #666;
+	background-color: #FFF;
+}
+.result {
+	border: 1px dashed #666;
+	background-color: #ffffdf;
+	padding: 4px;
+	font-size: 8pt;
+	margin: 10px;
+	margin-bottom: 20px;
+}
+input[type=text] {
+
+	width: 500px;
+}
