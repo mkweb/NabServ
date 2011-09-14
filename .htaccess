@@ -1,0 +1,23 @@
+RewriteEngine on
+
+RewriteRule ^(.*).css$	 	/?page=css&file=$1		[L]
+RewriteRule ^(.*).js$	 	/?page=js&file=$1		[L]
+
+RewriteCond %{REQUEST_URI}	!source.tar.gz
+RewriteCond %{REQUEST_URI} 	!^/favicon.ico
+RewriteCond %{REQUEST_URI} 	!^/robots.txt
+RewriteCond %{REQUEST_URI} 	!^/humans.txt
+RewriteCond %{REQUEST_URI} 	!^/res
+RewriteCond %{REQUEST_URI} 	!^/records
+RewriteCond %{REQUEST_URI} 	!^/broad
+RewriteCond %{REQUEST_URI} 	!^/chor
+RewriteCond %{REQUEST_URI} 	!^/mood
+RewriteCond %{REQUEST_URI} 	!^/files
+RewriteCond %{REQUEST_URI} 	!^/documentation
+RewriteCond %{REQUEST_URI} 	!^/index.php
+RewriteRule ^(.*)$ 		/index.php?request=$1&%{QUERY_STRING}	[L]
+
+RewriteRule ^records/(.*)$ 	/index.php?recordfile=$1		[L]
+RewriteRule ^broad/(.*)$ 	/files/broad/$1				[L]
+RewriteRule ^chor/(.*)$ 	/files/chor/$1				[L]
+RewriteRule ^mood/(.*)$ 	/files/mood/$1				[L]
