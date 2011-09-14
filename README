@@ -1,0 +1,16 @@
+This is an alternate Server for Nabaztags writtern in PHP.
+
+This Server includes a Api which can be viewed in http://nabaztag.mk-web.at/demo/, the User-Frontend and some testscripts like Choreographie-Creator (http://nabaztag.mk-web.at/tests/).
+Every data is stored in serialized files, so no Database is required.
+
+Server-Requirements:
+* PHP > 5.3		(use of namespaces)
+* Apache > 2.0
+* phpdocumentator 	(To create the documentation)
+
+If requirements are met everything should run out of the box without any additional configuration.
+
+Planned steps:
+* Complete Source documentation
+* Adding community functions like sending a message to a friend's rabit or get 2 rabits married
+* easy Language switch (at the moment default is English - to change this to german, set \base\Lang::init('en'); to \base\Lang::init('de');
