@@ -175,24 +175,27 @@ class AppController {
 			$result['inuse'][] = $app->getData();
 		}
 
-		$allapps = array_keys($this->nabaztag->getConfig('apps'));
+		if(!is_null($this->nabaztag->getConfig('apps'))) {
 
-		foreach($allapps as $key => $value) {
+			$allapps = array_keys($this->nabaztag->getConfig('apps'));
 
-			if(!isset($this->inuse[$value])) {
+			foreach($allapps as $key => $value) {
 
-				if(strstr($value, '-') !== false) {
+				if(!isset($this->inuse[$value])) {
 
-					list($code, $cnt) = explode('-', $value);
+					if(strstr($value, '-') !== false) {
 
-					$classname = 'nabserv\\apps\\' . ucfirst($code);
-					if(class_exists($classname)) {
+						list($code, $cnt) = explode('-', $value);
 
-						$obj = new $classname($this->nabaztag);
-						$obj->setUserData($this->inuse[$value]);
-						$obj->prepare($value);
+						$classname = 'nabserv\\apps\\' . ucfirst($code);
+						if(class_exists($classname)) {
 
-						$result['inuse'][] = $obj->getData();
+							$obj = new $classname($this->nabaztag);
+							$obj->setUserData($this->inuse[$value]);
+							$obj->prepare($value);
+
+							$result['inuse'][] = $obj->getData();
+						}
 					}
 				}
 			}
