@@ -40,13 +40,6 @@ class Weather extends Plugin {
 			return false;
 		}
 
-        $validate = $this->validate;
-
-        if($validate !== true) {
-
-            return $validate;
-        }
-
 		Nabaztag::getInstance(NAB_SERIAL)->setNewData('weather', $data);
 
 		return true;
@@ -124,62 +117,68 @@ class Weather extends Plugin {
 	*/
 	public function ping() {
 
-		$config = Nabaztag::getInstance(NAB_SERIAL)->getAllConfig();
+        $data = Nabaztag::getInstance(NAB_SERIAL)->getNewData();
 
-		if(isset($config['apps']['weather'])) {
+        if(isset($data['weather'])) {
+            $config = Nabaztag::getInstance(NAB_SERIAL)->getAllConfig();
 
-            $city = $config['apps']['weather']['city'];
-            $code = $config['apps']['weather']['code'];
+            if(isset($config['apps']['weather'])) {
 
-            $q = (!is_null($code) ? $code : $city);
+                $city = $config['apps']['weather']['city'];
+                $code = $config['apps']['weather']['code'];
 
-            try {
+                $q = (!is_null($code) ? $code : $city);
 
-                $w = new WeatherCom();
-                $w->search($q);
-                $data['city'] = $w->getSearchResult()->item->name;
+                try {
 
-                $forecast = $w->getForecast();
+                    $w = new WeatherCom();
+                    $w->search($q);
+                    $data['city'] = $w->getSearchResult()->item->name;
 
-                $date = new \DateTime();
-                // $date->add(new DateInterval('P1D'));
-                $dateString = $date->format('Y-m-d');
+                    $forecast = $w->getForecast();
 
-                if(isset($forecast[$dateString])) {
+                    $date = new \DateTime();
+                    // $date->add(new DateInterval('P1D'));
+                    $dateString = $date->format('Y-m-d');
 
-                    $forecast = $forecast[$dateString];
+                    if(isset($forecast[$dateString])) {
 
-                    if(!isset($forecast['06:00'])) {
+                        $forecast = $forecast[$dateString];
 
-                        throw new WeatherException("Data missing", "No date for 06:00 found.");
+                        if(!isset($forecast['06:00'])) {
+
+                            throw new WeatherException("Data missing", "No date for 06:00 found.");
+                        }
+                        
+                        if(!isset($forecast['11:00'])) {
+
+                            throw new WeatherException("Data missing", "No date for 11:00 found.");
+                        }
+
+                        $data['condition'] = $forecast['11:00']['txt'];
+
+                        list($y, $m, $d) = explode("-", $dateString);
+                        $dateTts = sprintf("% der %s %d", $d, $this->getMonth($m), $y);
+
+                        $string = "Heute, " . $dateTts . " in " . $data['city'] . ", " . $forecast['06:00']['lowest'] . ' bis ' . $forecast['06:00']['hightest'] . ' und mittags ' . $forecast['11:00']['lowest'] . ' bis ' . $forecast['11:00']['hightest'] . " Grad Celsius";
+
+                        if(strlen($string) < 80) $string .= ", " . $data['condition'];
                     }
-                    
-                    if(!isset($forecast['11:00'])) {
 
-                        throw new WeatherException("Data missing", "No date for 11:00 found.");
-                    }
+                } catch (WeatherException $we) {
 
-                    $data['condition'] = $forecast['11:00']['txt'];
-
-                    list($y, $m, $d) = explode("-", $dateString);
-                    $dateTts = sprintf("% der %s %d", $d, $this->getMonth($m), $y);
-
-                    $string = "Heute, " . $dateTts . " in " . $data['city'] . ", " . $forecast['06:00']['lowest'] . ' bis ' . $forecast['06:00']['hightest'] . ' und mittags ' . $forecast['11:00']['lowest'] . ' bis ' . $forecast['11:00']['hightest'] . " Grad Celsius, " . $data['condition'];
+                    $string = "Keine Wetterinformationen verfügbar.";
                 }
 
-            } catch (WeatherException $we) {
+                $mb = MessageBlock::getInstance(rand(11111, 99999));
+                $mb->addLocalStream('broadcast/broad/tts/' . urlencode($string));
 
-                $string = "Keine Wetterinformationen verfügbar.";
+                $this->data = $mb->getHex();
+
+                Nabaztag::getInstance(NAB_SERIAL)->setSeen('weather', true);
+                return true;
             }
-
-			$mb = MessageBlock::getInstance(rand(11111, 99999));
-			$mb->addLocalStream('broadcast/broad/tts/' . urlencode($string));
-
-			$this->data = $mb->getHex();
-
-			Nabaztag::getInstance(NAB_SERIAL)->setSeen('weather', true);
-			return true;
-		}
+        }
 
 		return false;
 	}
