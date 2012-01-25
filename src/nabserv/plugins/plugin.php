@@ -68,6 +68,37 @@ abstract class Plugin {
 		return array_merge(array($this->blockType), array('00', '00', dechex(count($this->data))), $this->data);
 	}
 
+    /**
+    * Validates Data from Homepage befor saving it.
+    *
+    * @access public
+    *
+    * @param Array
+    *
+    * @return mixed [Boolean|String]
+    *
+    */
+    public function validate(Array $data) {
+        Logger::debug(__METHOD__, 'plugin');
+
+        return true;
+    }
+
+    /**
+    * Prepare data before saving it.
+    *
+    * @access public
+    *
+    * @param Array
+    *
+    * @return Array
+    */
+    public function prepareData(Array $data) {
+        Logger::debug(__METHOD__, 'plugin');
+
+        return $data;
+    }
+
 	/**
 	* If time from last execute is grater than $this->randomTime, execute randomly
 	*

@@ -22,7 +22,7 @@ class Logger {
 	* @access private
 	* @var Int
 	*/
-	private static $level  = 0;
+	private static $level  = 3;
 
 	/**
 	* Current LogTarget

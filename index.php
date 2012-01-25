@@ -59,7 +59,9 @@ require_once('src/base/autoload.php');
 $data = $_GET;
 $request = explode('/', trim(array_shift($data), '/'));
 
-\base\Lang::init('en');
+$configFile = PATH_RES . DS . 'config.php';
+\base\Config::init($configFile);
+\base\Lang::init(\base\Config::read('lang'));
 
 $controller = new base\Controller();
 $controller->setRequest($request, $data);

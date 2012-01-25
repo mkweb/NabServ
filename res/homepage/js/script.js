@@ -1,5 +1,6 @@
 var openappdialog = null;
 var translations = new Array();
+var saveAppResponse = null;
 
 $(document).ready(function() {
 
@@ -366,13 +367,14 @@ function configapp(code) {
 
 				'[LANG:label.save_changes]' : function() {
 
-					saveAppData(app.code);
+					if(saveAppData(app.code)) {
 
-					$(this).dialog('close');
-					lastappdialog = null;
+                        $(this).dialog('close');
+                        lastappdialog = null;
 
-					location.href = location.href + '#maintab-apps';
-					location.reload();
+                        location.href = location.href + '#maintab-apps';
+                        location.reload();
+                    }
 				},
 				'[LANG:label.close]' : function() {
 
@@ -469,27 +471,90 @@ function getThings() {
 
 function saveAppData(appcode) {
 
-	var data = new Array();
+    var data = new Array();
 
-	$('.' + appcode + '-data').each(function() {
+    $('.' + appcode + '-data').each(function() {
 
-		data[$(this).attr('id')] = $(this).val();
-	});
+        data[$(this).attr('id')] = $(this).val();
+    });
 
-	var query = new Array();
+    var query = new Array();
 
-	for(key in data) {
+    for(key in data) {
 
-		query[query.length] = key + '=' + data[key];
-	}
+        query[query.length] = key + '=' + data[key];
+    }
 
 	query = query.join(',');
 	var url = BASE_URL + "/vl/app.php?sn=" + $('#serial').val() + "&token=" + $('#token').val() + "&d=config," + appcode + "," + query;
 
-	$.ajax({ async: false, url: url });
+    var result = true;
 
-	setFlash(translate('changes.saved'));
-	updateImage(appcode);
+	$.ajax({ 
+        async: false, 
+        url: url,
+        success: function(res) {
+
+            if(res != '') {
+
+                saveAppResponse = eval('(' + res + ')');
+
+                if(saveAppResponse.type != undefined) {
+
+                    var type = saveAppResponse.type;
+
+                    if(type == 'choose') {
+
+                        var data = saveAppResponse.data;
+                        var headline = saveAppResponse.headline;
+
+                        var html = headline;
+                        html += '<ul>';
+
+                        for(key in data) {
+
+                            var value = data[key];
+
+                            html += '<li><a href="javascript:changeAppDataValue(\'' + appcode + '\', \'' + saveAppResponse.key + '\', \'' + value + ' (' + key + ')' + '\');">' + value + '</a></li>';
+                        }
+
+                        html += '</ul>';
+
+                        $('<div id="dialog-choose" title="Bitte triff eine Auswahl">' + html + '</div>').dialog();
+                    }
+
+                    if(type == 'error') {
+
+                        $('<div title="Fehler">' + saveAppResponse.reason + '</div>').dialog({
+                            buttons: {
+                                'Ok' : function() {
+                                    $(this).dialog('close');
+                                }
+                            }
+                        });
+                    }
+                }
+
+                result = false;
+            }
+        }
+    });
+
+    if(result == true) {
+
+    	setFlash(translate('changes.saved'));
+    	updateImage(appcode);
+    }
+
+    return result;
+}
+
+function changeAppDataValue(appcode, key, value) {
+
+    $('.' + appcode + '-data#' + key).val(value.split(',').join(' '));
+
+    $('#dialog-choose').remove();
+    saveAppData(appcode);
 }
 
 function getNeededHtml(appcode, triggers, config) {

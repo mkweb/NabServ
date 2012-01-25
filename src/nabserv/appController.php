@@ -269,6 +269,22 @@ class AppController {
 			$data[$key] = $value;
 		}
 
+        $plugin = self::getPlugin($code);
+
+        if(!is_null($plugin)) {
+
+            $result = $plugin->validate($data);
+            
+            if($result !== true) {
+
+                echo json_encode($result); 
+                exit;
+            } else {
+
+                $data = $plugin->prepareData($data);
+            }
+        }
+
 		$current = $this->nabaztag->getConfig('apps');
 	
 		// crontabs
@@ -402,6 +418,19 @@ class AppController {
 
 		echo json_encode($result);
 	}
+
+    public static function getPlugin($code) {
+
+        $obj = null;
+        $className = __NAMESPACE__ . '\\plugins\\' . ucfirst($code);
+
+        if(class_exists($className)) {
+
+            $obj = new $className;
+        }
+
+        return $obj;
+    }
 }
 
 ?>

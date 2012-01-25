@@ -82,6 +82,44 @@ class LookupTable {
 		return $found;
 	}
 
+	public function search($data = null) {
+
+        if(is_null($data)) {
+
+            return $this->data;
+        }
+
+		$found = array();
+
+		if(is_array($data)) {
+
+			foreach($this->data as $savedkey => $saved) {
+
+				$key = 0;
+				$hit = false;
+				foreach($data as $key => $value) {
+
+					if($value == '' || (array_key_exists($key, $saved) && stristr($saved[$key], $value) !== false)) {
+
+					    $found[] = array($key => $saved[$key]);
+					}
+				}
+			}
+		} else {
+
+			foreach($this->data as $key => $saved) {
+
+				if(!is_array($saved) && stristr($saved, $data) !== false) {
+
+					$found = $data;
+					$found[] = $this->data[$key];
+				}
+			}
+		}
+
+		return $found;
+	}
+
 	public function remove($data) {
 
 		$key = $this->find($data, true);

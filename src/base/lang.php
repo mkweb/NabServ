@@ -8,7 +8,7 @@ class Lang {
 
 	private static $data = array();
 
-	public static function init($lang) {
+	public static function init($lang = 'en') {
 
 		$file = PATH_RES . DS . 'lang' . DS . $lang . '.properties';
 		
