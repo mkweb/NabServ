@@ -43,58 +43,64 @@ class Rss extends App {
 
 		$data = $this->nabaztag->getConfig('apps');
 
-		$url = (isset($data['rss']['url']) ? $data['rss']['url'] : null);
-		$lastts = (isset($data['rss']['lastts']) ? $data['rss']['lastts'] : null);
-		$savedheadlines = (isset($data['rss']['headlines']) ? $data['rss']['headlines'] : array());
+        foreach($data as $key => &$dat) {
+        
+            if(substr($key, 0, 3) == 'rss') {
 
-		// If never read or last read at least 10 minutes ago
-		if(!is_null($url) && (is_null($lastts) || $lastts < time() - $timeout)) {
+                $url = (isset($dat['url']) ? $dat['url'] : null);
+                $lastts = (isset($dat['lastts']) ? $dat['lastts'] : null);
+                $savedheadlines = (isset($dat['headlines']) ? $dat['headlines'] : array());
 
-			$dom = new DomDocument();
-			$dom->load($url);
+                // If never read or last read at least 10 minutes ago
+                if(is_null($lastts) || (!is_null($url) && (is_null($lastts) || $lastts < time() - $timeout))) {
 
-			$title = $dom->getElementsByTagName('title')->item(0)->nodeValue;
+                    $dom = new DomDocument();
+                    $dom->load($url);
 
-			$headlines = array();
-			foreach($dom->getElementsByTagName('item') as $node) {
+                    $title = $dom->getElementsByTagName('title')->item(0)->nodeValue;
 
-				$headlines[] = $node->getElementsByTagName('title')->item(0)->nodeValue;
-			}
+                    $headlines = array();
+                    foreach($dom->getElementsByTagName('item') as $node) {
 
-			$new = array();
-			foreach($headlines as $head) {
+                        $headlines[] = $node->getElementsByTagName('title')->item(0)->nodeValue;
+                    }
 
-				if(!in_array($head, $savedheadlines)) {
+                    $new = array();
+                    foreach($headlines as $head) {
 
-					$new[] = $head;
-				}
-			}
+                        if(!in_array($head, $savedheadlines)) {
 
-			if(count($new) < 1) {
+                            $new[] = $head;
+                        }
+                    }
 
-				return false;
-			}
+                    if(count($new) < 1) {
 
-			if(count($new) == 1) {
+                        continue;
+                    }
 
-				$msg = '';
+                    if(count($new) == 1) {
 
-				if(strlen($new[0]) <= 100) {
+                        $msg = '';
 
-					$message = ' - ' . $new[0];
-				}
+                        if(strlen($new[0]) <= 100) {
 
-				$this->sendApi('tts', 'Ein neuer Beitrag im RSS Feed ' . $title . $msg);
-			} else {
+                            $message = ' - ' . $new[0];
+                        }
 
-				$this->sendApi('tts', count($new) . ' neue Beiträge im RSS Feed ' . $title);
-			}
+                        $this->sendApi('tts', 'Ein neuer Beitrag im RSS Feed ' . $title . $msg);
+                    } else {
 
-			$data['rss']['lastts'] = time();
-			$data['rss']['headlines'] = $headlines;
+                        $this->sendApi('tts', count($new) . ' neue Beiträge im RSS Feed ' . $title);
+                    }
 
-			$this->nabaztag->setConfig('apps', $data);
-		}
+                    $dat['lastts'] = time();
+                    $dat['headlines'] = $headlines;
+                }
+            }
+        }
+
+        $this->nabaztag->setConfig('apps', $data);
 	}
 
 	public function onPing() {
