@@ -19,7 +19,8 @@ if($request[0] == 'tts') {
 
 	$string = urlencode(str_replace($search, $replace, urldecode($request[1])));
 
-	$url = "http://translate.google.com/translate_tts?tl=de&q=" . $string;
+	// $url = "http://translate.google.com/translate_tts?tl=de&q=" . $string;
+	$url = "http://translate.google.com/translate_tts?ie=UTF-8&q=" . $string . "&tl=de&total=1&idx=0&textlen=10&prev=input";
 
 	header('Content-Type: audio/mpeg');
 	readfile($url);

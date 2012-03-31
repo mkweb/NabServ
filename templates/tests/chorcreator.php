@@ -1,7 +1,7 @@
 <?php
 $slots = 20;
 $serial = "001d92164ae2";
-$token  = "8F25AB";
+$token  = "45EA15";
 
 $runtest = false;
 $save = false;
