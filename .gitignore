@@ -1,2 +1,5 @@
 database/*
 logs/*
+files/broad/*
+res/apps/images/cache/*
+files/broad/last.wav

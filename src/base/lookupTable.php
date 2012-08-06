@@ -42,7 +42,7 @@ class LookupTable {
 		$this->save();
 	}
 
-	public function find($data, $returnkey = false) {
+	public function find($data, $returnkey = false, $ignoreCase = false) {
 
 		$found = null;
 
@@ -54,7 +54,7 @@ class LookupTable {
 				$hit = false;
 				foreach($data as $key => $value) {
 
-					if(array_key_exists($key, $saved) && $saved[$key] == $value) {
+					if(array_key_exists($key, $saved) && strtolower($saved[$key]) == strtolower($value)) {
 
 						$hit = true;
 						break;
